@@ -1,0 +1,30 @@
+# MATLAB temporary files
+*.asv
+*.m~
+*.slxc
+*.mex*
+*.log
+*.tmp
+
+# Large generated datasets
+data/spectrograms/
+data/spectrograms_v1/
+data/spectrograms_v2_robust/
+data/spectrograms_v3_domain_randomized/
+data/blind_test_v1/
+data/blind_test_v2_final/
+Bases_de_Datos/
+data_nist_public/
+data_real_sdr/
+
+# Large RF / IQ / dataset files
+*.h5
+*.hdf5
+*.bin
+*.dat
+*.iq
+*.mat
+
+# System files
+.DS_Store
+Thumbs.db
