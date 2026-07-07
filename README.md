@@ -182,23 +182,9 @@ rf-signal-classification-wifi-bluetooth-ai/
 └── docs/
     └── validation_summary.md
 ```
-
-Synthetic or captured I/Q waveform
-        ↓
-RF impairments and channel effects
-        ↓
-Time-frequency spectrogram
-        ↓
-224 × 224 normalized image
-        ↓
-CNN classifier
-        ↓
-Predicted RF signal class
 ---
 
 ## Simulated SDR Validation
-
-A simulated SDR validation dataset was generated to evaluate the trained CNN under receiver-like conditions. This dataset includes gain variation, ADC-like quantization, IQ imbalance, DC offset, frequency offset, multipath, colored noise, and burst-like signal activity.
 
 | Validation stage | Dataset size | Accuracy |
 |---|---:|---:|
