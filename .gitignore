@@ -28,3 +28,6 @@ data_real_sdr/
 # System files
 .DS_Store
 Thumbs.db
+data_simulated_sdr_v1/
+data_nist_public_resampled/
+data_nist_active/
