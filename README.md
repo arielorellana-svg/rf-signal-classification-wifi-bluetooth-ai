@@ -109,6 +109,19 @@ A custom convolutional neural network was trained using the generated spectrogra
 
 The model was trained and evaluated in MATLAB using the Deep Learning Toolbox.
 
+## Pretrained Model
+
+A pretrained MATLAB CNN model is included in this repository at:
+
+`models/cnn_wifi_bluetooth_v3_domain_randomized.mat`
+
+This file allows reviewers to verify the reported blind-test results without retraining the network from scratch.
+
+To evaluate the pretrained model, run:
+
+``matlab
+`matlab/step05_evaluate_blind_test.m`
+
 ---
 
 ## 8. Validation Methodology
