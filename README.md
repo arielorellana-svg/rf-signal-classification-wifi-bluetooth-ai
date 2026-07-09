@@ -117,10 +117,10 @@ A pretrained MATLAB CNN model is included in this repository at:
 
 This file allows reviewers to verify the reported blind-test results without retraining the network from scratch.
 
-To evaluate the pretrained model, run:
+To evaluate the pretrained model, run the following script from the repository root in MATLAB:
 
-``matlab
-`matlab/step05_evaluate_blind_test.m`
+```matlab
+run("matlab/step05_evaluate_blind_test.m")
 
 ---
 
