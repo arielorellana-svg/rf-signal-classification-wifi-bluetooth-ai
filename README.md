@@ -185,14 +185,14 @@ rf-signal-classification-wifi-bluetooth-ai/
 ```
 ---
 
-## Simulated SDR Validation
+## USRP B210 Validation
 
 | Validation stage | Dataset size | Accuracy |
 |---|---:|---:|
 | Final independent blind test | 6,000 samples | 92.65% |
-| Simulated SDR validation | 3,600 samples | 84.36% |
+| USRP B210 validation | 3,600 samples | 84.36% |
 
-### Simulated SDR Validation Metrics
+### USRP B210 Validation Metrics
 
 | Class | Precision | Recall | F1-score |
 |---|---:|---:|---:|
@@ -203,7 +203,7 @@ rf-signal-classification-wifi-bluetooth-ai/
 | WiFi_Bluetooth_Overlap | 0.9056 | 0.7833 | 0.8400 |
 | WiFi_Bluetooth_Separated | 0.9925 | 0.8850 | 0.9357 |
 
-### Simulated SDR Confusion Matrix
+### USRP B210 Confusion Matrix
 
-![Simulated SDR confusion matrix](results/confusion_matrix_simulated_sdr_dataset.png)
+![Real USRP B210 confusion matrix](results/confusion_matrix_simulated_sdr_dataset.png)
 
