@@ -121,6 +121,18 @@ To evaluate the pretrained model, run the following script from the repository r
 
 ```matlab
 run("matlab/step05_evaluate_blind_test.m")
+```
+
+If the model needs to be regenerated, run:
+
+```matlab
+run("matlab/step01_generate_dataset_wifi_bluetooth.m")
+run("matlab/step02_train_cnn_wifi_bluetooth.m")
+```
+
+The evaluation script loads the pretrained model from `models/cnn_wifi_bluetooth_v3_domain_randomized.mat` and evaluates it on `data/blind_test_v2_final`.
+
+---
 
 ---
 
