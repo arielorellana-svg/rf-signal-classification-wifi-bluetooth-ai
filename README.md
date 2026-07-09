@@ -167,11 +167,12 @@ rf-signal-classification-wifi-bluetooth-ai/
 ├── README.md
 ├── .gitignore
 ├── matlab/
-│   ├── 00_test_wifi_bluetooth_generation.m
-│   ├── 01_generate_dataset_wifi_bluetooth_v3.m
-│   ├── 02_train_cnn_wifi_bluetooth_v3.m
-│   ├── 03_generate_blind_test_v2_final.m
-│   └── 05_evaluate_blind_test_v2_final.m
+│   ├── step00_test_wifi_bluetooth_generation.m
+│   ├── step01_generate_dataset_wifi_bluetooth.m
+│   ├── step02_train_cnn_wifi_bluetooth.m
+│   ├── step03_generate_blind_test.m
+│   ├── step05_evaluate_blind_test.m
+│   └── 11_generate_simulated_sdr_dataset.m
 ├── results/
 │   ├── confusion_matrix_blind_test_v3_final.png
 │   └── metrics_blind_test_v3_final.csv
