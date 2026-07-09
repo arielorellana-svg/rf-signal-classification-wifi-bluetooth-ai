@@ -134,7 +134,6 @@ The evaluation script loads the pretrained model from `models/cnn_wifi_bluetooth
 
 ---
 
----
 
 ## 8. Validation Methodology
 
