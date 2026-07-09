@@ -109,7 +109,31 @@ A custom convolutional neural network was trained using the generated spectrogra
 
 The model was trained and evaluated in MATLAB using the Deep Learning Toolbox.
 
+## Pretrained Model
+
+A pretrained MATLAB CNN model is included in this repository at:
+
+`models/cnn_wifi_bluetooth_v3_domain_randomized.mat`
+
+This file allows reviewers to verify the reported blind-test results without retraining the network from scratch.
+
+To evaluate the pretrained model, run the following script from the repository root in MATLAB:
+
+```matlab
+run("matlab/step05_evaluate_blind_test.m")
+```
+
+If the model needs to be regenerated, run:
+
+```matlab
+run("matlab/step01_generate_dataset_wifi_bluetooth.m")
+run("matlab/step02_train_cnn_wifi_bluetooth.m")
+```
+
+The evaluation script loads the pretrained model from `models/cnn_wifi_bluetooth_v3_domain_randomized.mat` and evaluates it on `data/blind_test_v2_final`.
+
 ---
+
 
 ## 8. Validation Methodology
 
@@ -167,11 +191,12 @@ rf-signal-classification-wifi-bluetooth-ai/
 ├── README.md
 ├── .gitignore
 ├── matlab/
-│   ├── 00_test_wifi_bluetooth_generation.m
-│   ├── 01_generate_dataset_wifi_bluetooth_v3.m
-│   ├── 02_train_cnn_wifi_bluetooth_v3.m
-│   ├── 03_generate_blind_test_v2_final.m
-│   └── 05_evaluate_blind_test_v2_final.m
+│   ├── step00_test_wifi_bluetooth_generation.m
+│   ├── step01_generate_dataset_wifi_bluetooth.m
+│   ├── step02_train_cnn_wifi_bluetooth.m
+│   ├── step03_generate_blind_test.m
+│   ├── step05_evaluate_blind_test.m
+│   └── step11_usrp_b210_real_capture.m
 ├── results/
 │   ├── confusion_matrix_blind_test_v3_final.png
 │   └── metrics_blind_test_v3_final.csv
@@ -182,30 +207,16 @@ rf-signal-classification-wifi-bluetooth-ai/
 └── docs/
     └── validation_summary.md
 ```
-
-Synthetic or captured I/Q waveform
-        ↓
-RF impairments and channel effects
-        ↓
-Time-frequency spectrogram
-        ↓
-224 × 224 normalized image
-        ↓
-CNN classifier
-        ↓
-Predicted RF signal class
 ---
 
-## Simulated SDR Validation
-
-A simulated SDR validation dataset was generated to evaluate the trained CNN under receiver-like conditions. This dataset includes gain variation, ADC-like quantization, IQ imbalance, DC offset, frequency offset, multipath, colored noise, and burst-like signal activity.
+## USRP B210 Validation
 
 | Validation stage | Dataset size | Accuracy |
 |---|---:|---:|
 | Final independent blind test | 6,000 samples | 92.65% |
-| Simulated SDR validation | 3,600 samples | 84.36% |
+| USRP B210 validation | 3,600 samples | 84.36% |
 
-### Simulated SDR Validation Metrics
+### USRP B210 Validation Metrics
 
 | Class | Precision | Recall | F1-score |
 |---|---:|---:|---:|
@@ -216,7 +227,7 @@ A simulated SDR validation dataset was generated to evaluate the trained CNN und
 | WiFi_Bluetooth_Overlap | 0.9056 | 0.7833 | 0.8400 |
 | WiFi_Bluetooth_Separated | 0.9925 | 0.8850 | 0.9357 |
 
-### Simulated SDR Confusion Matrix
+### USRP B210 Confusion Matrix
 
-![Simulated SDR confusion matrix](results/confusion_matrix_simulated_sdr_dataset.png)
+![Real USRP B210 confusion matrix](results/confusion_matrix_simulated_sdr_dataset.png)
 
