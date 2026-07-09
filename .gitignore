@@ -23,7 +23,12 @@ data_real_sdr/
 *.bin
 *.dat
 *.iq
+
+# MATLAB model files
 *.mat
+
+# Keep the final pretrained model for reproducibility
+!models/cnn_wifi_bluetooth_v3_domain_randomized.mat
 
 # System files
 .DS_Store
