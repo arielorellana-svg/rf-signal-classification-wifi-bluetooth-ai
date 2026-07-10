@@ -16,7 +16,9 @@ clear; clc; close all;
 %% -----------------------------
 %  Project configuration
 %% -----------------------------
-projectDir = "C:\Users\DETPC\Desktop\Proyecto";
+scriptPath = mfilename("fullpath");
+matlabDir = fileparts(scriptPath);
+projectDir = fileparts(matlabDir);
 
 dataDir = fullfile(projectDir, "data", "spectrograms_v3_domain_randomized");
 modelsDir = fullfile(projectDir, "models");
