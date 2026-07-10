@@ -1,2 +1,0 @@
-Model,NumClasses,NumSDRSamples,SDRAccuracy,MiniBatchSize,SDRDatasetPath
-resnet18_transfer_learning,6,3600,0.866944444444444,64,C:\Users\DETPC\Desktop\Proyecto\data_sdr\spectrograms
