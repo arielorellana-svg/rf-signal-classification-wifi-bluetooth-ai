@@ -27,9 +27,10 @@ scenario = "Real WiFi capture using USRP B210";
 %% Project folders
 projectDir = pwd;
 
-baseDir = fullfile(projectDir, "data_usrp_b210_real_v1");
+baseDir = fullfile(projectDir, "data_sdr");
 rawRoot = fullfile(baseDir, "raw_iq", label);
 specRoot = fullfile(baseDir, "spectrograms", label);
+metadataPath = fullfile(baseDir, "metadata_real_sdr_b210.csv");
 
 if ~exist(rawRoot, "dir")
     mkdir(rawRoot);
@@ -39,7 +40,7 @@ if ~exist(specRoot, "dir")
     mkdir(specRoot);
 end
 
-metadataPath = fullfile(baseDir, "metadata_usrp_b210_real_v1.csv");
+metadataPath = fullfile(baseDir, "metadata_real_sdr_b210.csv");
 
 %% USRP parameters
 platform = "B210";
