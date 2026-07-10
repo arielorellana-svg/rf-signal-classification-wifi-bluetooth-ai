@@ -1,44 +1,69 @@
 # RF Signal Classification Using AI: WiFi and Bluetooth Coexistence
 
-This repository presents a MATLAB-based deep learning system for classifying RF signal conditions in WiFi and Bluetooth coexistence scenarios. The project converts complex I/Q waveforms into time-frequency spectrogram images and uses convolutional neural networks to classify the corresponding RF scenario.
+This repository presents a MATLAB-based deep learning project for RF signal classification in WiFi and Bluetooth coexistence scenarios. The system converts complex I/Q waveforms into spectrogram images and classifies each observation into one of six RF signal conditions.
 
 The project includes two model workflows:
 
-1. A custom CNN baseline trained from scratch.
-2. A ResNet-18 transfer-learning model adapted from a pretrained image-classification network.
+1. **Custom CNN baseline** trained from scratch.
+2. **ResNet-18 transfer learning** using a pretrained convolutional neural network adapted to the RF spectrogram classification task.
 
-The final system classifies six RF signal classes:
+The project is designed as an academic and reproducible workflow: dataset generation, model training, blind-test evaluation, SDR spectrogram validation, metrics, and confusion matrices are organized through MATLAB scripts and result files.
 
-- `Bluetooth`
-- `Noise`
-- `Unknown`
-- `WiFi`
-- `WiFi_Bluetooth_Overlap`
-- `WiFi_Bluetooth_Separated`
+---
+
+## Table of Contents
+
+- [1. Project Objective](#1-project-objective)
+- [2. Classification Problem](#2-classification-problem)
+- [3. Signal Classes](#3-signal-classes)
+- [4. System Workflow](#4-system-workflow)
+- [5. Dataset Design](#5-dataset-design)
+- [6. Spectrogram Representation](#6-spectrogram-representation)
+- [7. RF Impairments and Domain Randomization](#7-rf-impairments-and-domain-randomization)
+- [8. Models](#8-models)
+- [9. Main Results](#9-main-results)
+- [10. Custom CNN Baseline Results](#10-custom-cnn-baseline-results)
+- [11. ResNet-18 Transfer Learning Results](#11-resnet-18-transfer-learning-results)
+- [12. SDR Image Validation](#12-sdr-image-validation)
+- [13. Reproducibility Guide](#13-reproducibility-guide)
+- [14. Repository Structure](#14-repository-structure)
+- [15. Generated Outputs](#15-generated-outputs)
+- [16. Notes and Limitations](#16-notes-and-limitations)
+- [17. License](#17-license)
 
 ---
 
 ## 1. Project Objective
 
-The objective of this project is to develop and evaluate an AI-based RF signal classifier capable of distinguishing WiFi, Bluetooth, noise, unknown RF-like signals, and WiFi-Bluetooth coexistence cases.
+The objective of this project is to build and evaluate an AI-based RF signal classifier capable of identifying WiFi, Bluetooth, noise, unknown RF-like activity, and WiFi-Bluetooth coexistence conditions from spectrogram images.
 
-The project focuses on spectrum-sensing classification using spectrograms generated from I/Q waveforms. Instead of relying only on received power or RSSI, the classifier learns time-frequency patterns such as occupied bandwidth, spectral location, frequency displacement, overlap, coexistence behavior, and noise-like structures.
+The project focuses on **spectrum-sensing classification**. Instead of relying only on received power or RSSI, the classifier learns time-frequency patterns such as:
+
+- Occupied bandwidth
+- Frequency displacement
+- Spectral overlap
+- Signal coexistence
+- Noise-like behavior
+- Unknown RF structures
+- Receiver-like impairments
+
+The system follows the technical goal of classifying RF signal activity using AI and spectrogram-based deep learning.
 
 ---
 
-## 2. Technical Approach
+## 2. Classification Problem
 
-The processing chain is organized as follows:
+The input to the classifier is a spectrogram image generated from a complex I/Q waveform segment.
 
-1. Generate complex baseband I/Q waveforms for WiFi, Bluetooth, noise, unknown signals, and coexistence cases.
-2. Apply domain randomization, RF impairments, and channel-like effects.
-3. Convert I/Q waveform segments into normalized spectrogram images.
-4. Train a custom CNN baseline.
-5. Train a ResNet-18 transfer-learning model.
-6. Evaluate both models on an independent blind-test dataset.
-7. Evaluate both models on SDR spectrogram images.
+The output is one class label:
 
-The repository is designed so that the main results can be reproduced from MATLAB scripts and verified using saved model files and result summaries.
+```text
+I/Q waveform  →  spectrogram image  →  trained classifier  →  RF class
+```
+
+This is an **image-level classification** problem. Each spectrogram corresponds to a complete RF observation window and receives one label.
+
+This project does not perform pixel-level segmentation. It classifies the whole spectrogram image into one of six classes.
 
 ---
 
@@ -47,15 +72,51 @@ The repository is designed so that the main results can be reproduced from MATLA
 | Class | Description |
 |---|---|
 | `Bluetooth` | Bluetooth Low Energy waveform with frequency displacement and RF impairments. |
-| `Noise` | Complex receiver-like noise, including colored noise, DC offset, and weak artifacts. |
-| `Unknown` | Synthetic RF-like signals that do not belong to the WiFi or Bluetooth target classes. |
+| `Noise` | Complex receiver-like noise, including colored noise, DC offset, weak bursts, and spurious tones. |
+| `Unknown` | Synthetic RF-like signals that do not belong to the target WiFi or Bluetooth classes. |
 | `WiFi` | WLAN waveform generated using MATLAB WLAN functions. |
 | `WiFi_Bluetooth_Overlap` | WiFi and Bluetooth activity occupying overlapping or nearby spectral regions. |
 | `WiFi_Bluetooth_Separated` | WiFi and Bluetooth activity present in the same observation window but separated in frequency. |
 
 ---
 
-## 4. Dataset Summary
+## 4. System Workflow
+
+The complete workflow is organized as follows:
+
+```text
+Synthetic I/Q waveform generation
+        ↓
+RF impairments and domain randomization
+        ↓
+Spectrogram image generation
+        ↓
+Custom CNN training
+        ↓
+ResNet-18 transfer-learning training
+        ↓
+Final blind-test evaluation
+        ↓
+SDR spectrogram image validation
+        ↓
+Metrics, confusion matrices, and model comparison
+```
+
+The repository includes scripts for:
+
+- Testing WiFi and Bluetooth waveform generation
+- Generating the training dataset
+- Training a custom CNN baseline
+- Training a ResNet-18 transfer-learning model
+- Generating the final blind-test dataset
+- Evaluating the custom CNN on the blind-test dataset
+- Evaluating the transfer-learning model on the blind-test dataset
+- Evaluating both models on SDR spectrogram images
+- Capturing SDR I/Q data using a USRP B210
+
+---
+
+## 5. Dataset Design
 
 Large generated datasets are not included in this repository because of size. They can be regenerated using the MATLAB scripts in the `matlab/` folder.
 
@@ -65,13 +126,47 @@ Large generated datasets are not included in this repository because of size. Th
 | `data/blind_test_v2_final` | 6 | 1,000 | 6,000 | Final independent blind-test evaluation |
 | `data_sdr/spectrograms` | 6 | 600 | 3,600 | SDR spectrogram image validation |
 
-The training dataset and final blind-test dataset are generated independently using different random seeds and parameter variations. The SDR dataset is used as an additional validation stage to evaluate model behavior under captured SDR image conditions.
+The training dataset and blind-test dataset are generated independently. The blind-test dataset is not used during training.
+
+The SDR spectrogram dataset is used as an additional validation stage to measure how the trained models behave on images generated from SDR captures.
 
 ---
 
-## 5. RF Impairments and Domain Randomization
+## 6. Spectrogram Representation
 
-To improve generalization, the synthetic waveform generation process includes randomized RF and receiver-like effects, including:
+Each complex I/Q segment is converted into a normalized spectrogram image.
+
+The image size used by the project is:
+
+```text
+224 x 224
+```
+
+The spectrogram representation preserves key RF features, including:
+
+- Time-frequency occupancy
+- Bandwidth
+- Spectral displacement
+- Coexistence behavior
+- Signal overlap
+- Noise-like activity
+- Unknown signal structure
+
+For the custom CNN baseline, the spectrogram images are used as grayscale images.
+
+For the ResNet-18 transfer-learning model, the grayscale spectrogram images are converted to RGB format during preprocessing because ResNet-18 expects an input size of:
+
+```text
+224 x 224 x 3
+```
+
+---
+
+## 7. RF Impairments and Domain Randomization
+
+To improve generalization, the synthetic waveform generation process includes randomized RF and receiver-like effects.
+
+The implemented impairments include:
 
 - Additive white Gaussian noise
 - Frequency offset
@@ -81,18 +176,587 @@ To improve generalization, the synthetic waveform generation process includes ra
 - IQ imbalance
 - DC offset
 - Colored noise
-- Variable Bluetooth-to-WiFi power ratio
-- Continuous Bluetooth and unknown-signal frequency displacement
 - Time shifts
-- Noise bursts and weak spurious tones
+- Noise bursts
+- Weak spurious tones
+- Variable Bluetooth-to-WiFi power ratio
+- Continuous Bluetooth frequency displacement
+- Continuous unknown-signal frequency displacement
 
-This variability reduces dependence on idealized signal positions and encourages the model to learn spectral structure instead of memorizing fixed locations.
+This domain-randomized design helps prevent the model from memorizing fixed spectral positions and encourages it to learn more general RF patterns.
 
 ---
 
-## 6. Spectrogram Representation
+## 8. Models
 
-Each I/Q segment is converted into a normalized spectrogram image with fixed size:
+Two model workflows are included.
+
+---
+
+### 8.1 Custom CNN Baseline
+
+The custom CNN baseline is trained from scratch using the domain-randomized spectrogram dataset.
+
+Main training script:
+
+```matlab
+run("matlab/step02_train_cnn_wifi_bluetooth.m")
+```
+
+Main evaluation script:
+
+```matlab
+run("matlab/step05_evaluate_blind_test.m")
+```
+
+Saved model:
 
 ```text
-224 x 224
+models/cnn_wifi_bluetooth_v3_domain_randomized.mat
+```
+
+This model provides the baseline performance of the project.
+
+---
+
+### 8.2 ResNet-18 Transfer Learning
+
+The transfer-learning workflow uses ResNet-18 as a pretrained base network. The final classification layers are replaced and fine-tuned for the six RF spectrogram classes.
+
+Training script:
+
+```matlab
+run("matlab/step02b_train_transfer_learning_wifi_bluetooth.m")
+```
+
+Blind-test evaluation script:
+
+```matlab
+run("matlab/step05b_evaluate_transfer_learning_blind_test.m")
+```
+
+SDR image evaluation script:
+
+```matlab
+run("matlab/step06_evaluate_transfer_learning_sdr_dataset.m")
+```
+
+Saved model:
+
+```text
+models/resnet18_transfer_learning_wifi_bluetooth.mat
+```
+
+The transfer-learning model is evaluated using the same final blind-test and SDR spectrogram datasets as the custom CNN baseline.
+
+---
+
+## 9. Main Results
+
+The following table summarizes the main model comparison.
+
+| Model | Final blind-test accuracy | SDR image validation accuracy |
+|---|---:|---:|
+| Custom CNN baseline | 92.65% | 84.36% |
+| ResNet-18 transfer learning | 93.50% | 86.69% |
+
+The ResNet-18 transfer-learning model improved the final blind-test accuracy by:
+
+```text
++0.85 percentage points
+```
+
+and improved the SDR image validation accuracy by:
+
+```text
++2.33 percentage points
+```
+
+compared with the custom CNN baseline.
+
+---
+
+## 10. Custom CNN Baseline Results
+
+---
+
+### 10.1 Final Independent Blind Test
+
+The custom CNN baseline achieved:
+
+```text
+Final blind-test accuracy: 92.65%
+```
+
+Metrics by class:
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Bluetooth | 0.9115 | 0.9270 | 0.9192 |
+| Noise | 0.9861 | 0.9950 | 0.9905 |
+| Unknown | 0.9969 | 0.9520 | 0.9739 |
+| WiFi | 0.8104 | 0.9790 | 0.8868 |
+| WiFi_Bluetooth_Overlap | 0.9437 | 0.7880 | 0.8589 |
+| WiFi_Bluetooth_Separated | 0.9406 | 0.9180 | 0.9292 |
+
+Confusion matrix:
+
+![Custom CNN final blind-test confusion matrix](results/confusion_matrix_blind_test_v3_final.png)
+
+Associated result files:
+
+```text
+results/metrics_blind_test_v3_final.csv
+results/confusion_matrix_blind_test_v3_final.png
+```
+
+---
+
+### 10.2 SDR Image Validation
+
+The custom CNN baseline achieved:
+
+```text
+SDR image validation accuracy: 84.36%
+```
+
+Metrics by class:
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Bluetooth | 0.8447 | 0.9517 | 0.8950 |
+| Noise | 0.8978 | 0.8633 | 0.8802 |
+| Unknown | 0.6641 | 0.8733 | 0.7545 |
+| WiFi | 0.8393 | 0.7050 | 0.7663 |
+| WiFi_Bluetooth_Overlap | 0.9056 | 0.7833 | 0.8400 |
+| WiFi_Bluetooth_Separated | 0.9925 | 0.8850 | 0.9357 |
+
+Confusion matrix:
+
+![Custom CNN SDR confusion matrix](results/confusion_matrix_cnn_sdr_dataset.png)
+
+Associated result files:
+
+```text
+results/metrics_cnn_sdr_dataset.csv
+results/summary_cnn_sdr_dataset.csv
+results/confusion_matrix_cnn_sdr_dataset.png
+```
+
+---
+
+## 11. ResNet-18 Transfer Learning Results
+
+---
+
+### 11.1 Training Summary
+
+The ResNet-18 transfer-learning model was trained using the domain-randomized spectrogram dataset.
+
+Training configuration:
+
+| Parameter | Value |
+|---|---:|
+| Base network | ResNet-18 |
+| Number of classes | 6 |
+| Maximum epochs | 12 |
+| Mini-batch size | 64 |
+| Initial learning rate | 1e-4 |
+| L2 regularization | 1e-4 |
+| Validation patience | 6 |
+| Validation accuracy | 95.96% |
+| Internal test accuracy | 95.93% |
+
+Associated result files:
+
+```text
+results/summary_transfer_learning_training.csv
+results/metrics_transfer_learning_internal_test.csv
+results/confusion_matrix_transfer_learning_internal_test.png
+```
+
+Internal test metrics:
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Bluetooth | 0.9580 | 0.9133 | 0.9352 |
+| Noise | 0.9934 | 1.0000 | 0.9967 |
+| Unknown | 0.9933 | 0.9844 | 0.9888 |
+| WiFi | 0.9087 | 0.9956 | 0.9502 |
+| WiFi_Bluetooth_Overlap | 0.9193 | 0.9111 | 0.9152 |
+| WiFi_Bluetooth_Separated | 0.9884 | 0.9511 | 0.9694 |
+
+Internal test confusion matrix:
+
+![Transfer learning internal test confusion matrix](results/confusion_matrix_transfer_learning_internal_test.png)
+
+---
+
+### 11.2 Final Independent Blind Test
+
+The ResNet-18 transfer-learning model achieved:
+
+```text
+Final blind-test accuracy: 93.50%
+```
+
+Metrics by class:
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Bluetooth | 0.9575 | 0.9010 | 0.9284 |
+| Noise | 0.9497 | 1.0000 | 0.9742 |
+| Unknown | 0.9947 | 0.9340 | 0.9634 |
+| WiFi | 0.8473 | 0.9880 | 0.9123 |
+| WiFi_Bluetooth_Overlap | 0.9091 | 0.8500 | 0.8786 |
+| WiFi_Bluetooth_Separated | 0.9700 | 0.9370 | 0.9532 |
+
+Confusion matrix:
+
+![Transfer learning final blind-test confusion matrix](results/confusion_matrix_transfer_learning_blind_test.png)
+
+Associated result files:
+
+```text
+results/metrics_transfer_learning_blind_test.csv
+results/summary_transfer_learning_blind_test.csv
+results/confusion_matrix_transfer_learning_blind_test.png
+```
+
+---
+
+### 11.3 SDR Image Validation
+
+The ResNet-18 transfer-learning model achieved:
+
+```text
+SDR image validation accuracy: 86.69%
+```
+
+Metrics by class:
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| Bluetooth | 0.8902 | 0.8783 | 0.8842 |
+| Noise | 0.8806 | 0.8850 | 0.8828 |
+| Unknown | 0.7229 | 0.8567 | 0.7841 |
+| WiFi | 0.8402 | 0.8850 | 0.8620 |
+| WiFi_Bluetooth_Overlap | 0.9370 | 0.8183 | 0.8737 |
+| WiFi_Bluetooth_Separated | 0.9796 | 0.8783 | 0.9262 |
+
+Confusion matrix:
+
+![Transfer learning SDR confusion matrix](results/confusion_matrix_transfer_learning_sdr_dataset.png)
+
+Associated result files:
+
+```text
+results/metrics_transfer_learning_sdr_dataset.csv
+results/summary_transfer_learning_sdr_dataset.csv
+results/confusion_matrix_transfer_learning_sdr_dataset.png
+```
+
+---
+
+## 12. SDR Image Validation
+
+The SDR image validation dataset contains spectrogram images generated from SDR I/Q captures and organized into the same six class folders.
+
+Dataset path used locally:
+
+```text
+data_sdr/spectrograms
+```
+
+Dataset summary:
+
+| Class | Samples |
+|---|---:|
+| Bluetooth | 600 |
+| Noise | 600 |
+| Unknown | 600 |
+| WiFi | 600 |
+| WiFi_Bluetooth_Overlap | 600 |
+| WiFi_Bluetooth_Separated | 600 |
+| **Total** | **3,600** |
+
+The SDR dataset is not used for model training. It is used only as an additional validation dataset.
+
+This validation stage is expected to be more difficult than the synthetic blind test because SDR images may include:
+
+- Hardware gain variation
+- Receiver noise
+- Frequency offsets
+- Channel effects
+- Capture artifacts
+- Interference
+- Conditions not fully represented in synthetic training
+
+The ResNet-18 transfer-learning model showed better SDR validation performance than the custom CNN baseline.
+
+---
+
+## 13. Reproducibility Guide
+
+---
+
+### 13.1 MATLAB Requirements
+
+The project uses MATLAB and the following toolboxes or support packages depending on the script:
+
+- MATLAB
+- Deep Learning Toolbox
+- WLAN Toolbox
+- Bluetooth Toolbox
+- Communications Toolbox
+- Image Processing Toolbox
+- Statistics and Machine Learning Toolbox
+- Deep Learning Toolbox Model for ResNet-18 Network
+- Communications Toolbox Support Package for USRP Radio, only for SDR capture scripts
+
+---
+
+### 13.2 Path Configuration
+
+The scripts should be executed from the repository root.
+
+Recommended usage:
+
+```matlab
+cd("path/to/rf-signal-classification-wifi-bluetooth-ai")
+```
+
+Some scripts may contain a local variable such as:
+
+```matlab
+projectDir = "C:\Users\DETPC\Desktop\Proyecto";
+```
+
+For replication on another computer, change it to:
+
+```matlab
+projectDir = pwd;
+```
+
+or replace it with the absolute path of the cloned repository.
+
+---
+
+### 13.3 Generate the Training Dataset
+
+```matlab
+run("matlab/step01_generate_dataset_wifi_bluetooth.m")
+```
+
+This generates:
+
+```text
+data/spectrograms_v3_domain_randomized
+```
+
+Expected size:
+
+```text
+18,000 spectrogram images
+```
+
+---
+
+### 13.4 Train the Custom CNN Baseline
+
+```matlab
+run("matlab/step02_train_cnn_wifi_bluetooth.m")
+```
+
+This saves:
+
+```text
+models/cnn_wifi_bluetooth_v3_domain_randomized.mat
+```
+
+---
+
+### 13.5 Generate the Final Blind-Test Dataset
+
+```matlab
+run("matlab/step03_generate_blind_test.m")
+```
+
+This generates:
+
+```text
+data/blind_test_v2_final
+```
+
+Expected size:
+
+```text
+6,000 spectrogram images
+```
+
+---
+
+### 13.6 Evaluate the Custom CNN Baseline
+
+Final blind-test evaluation:
+
+```matlab
+run("matlab/step05_evaluate_blind_test.m")
+```
+
+SDR image validation:
+
+```matlab
+run("matlab/step06a_evaluate_cnn_sdr_dataset.m")
+```
+
+---
+
+### 13.7 Train the ResNet-18 Transfer-Learning Model
+
+```matlab
+run("matlab/step02b_train_transfer_learning_wifi_bluetooth.m")
+```
+
+This saves:
+
+```text
+models/resnet18_transfer_learning_wifi_bluetooth.mat
+```
+
+---
+
+### 13.8 Evaluate the ResNet-18 Transfer-Learning Model
+
+Final blind-test evaluation:
+
+```matlab
+run("matlab/step05b_evaluate_transfer_learning_blind_test.m")
+```
+
+SDR image validation:
+
+```matlab
+run("matlab/step06_evaluate_transfer_learning_sdr_dataset.m")
+```
+
+---
+
+### 13.9 SDR Capture Script
+
+The repository also includes a script for collecting SDR I/Q captures using a USRP B210:
+
+```matlab
+run("matlab/step11_usrp_b210_real_capture.m")
+```
+
+This script is intended for data collection and requires compatible SDR hardware and MATLAB support packages.
+
+---
+
+## 14. Repository Structure
+
+```text
+rf-signal-classification-wifi-bluetooth-ai/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── matlab/
+│   ├── step00_test_wifi_bluetooth_generation.m
+│   ├── step01_generate_dataset_wifi_bluetooth.m
+│   ├── step02_train_cnn_wifi_bluetooth.m
+│   ├── step02b_train_transfer_learning_wifi_bluetooth.m
+│   ├── step03_generate_blind_test.m
+│   ├── step05_evaluate_blind_test.m
+│   ├── step05b_evaluate_transfer_learning_blind_test.m
+│   ├── step06a_evaluate_cnn_sdr_dataset.m
+│   ├── step06_evaluate_transfer_learning_sdr_dataset.m
+│   └── step11_usrp_b210_real_capture.m
+├── models/
+│   ├── cnn_wifi_bluetooth_v3_domain_randomized.mat
+│   ├── resnet18_transfer_learning_wifi_bluetooth.mat
+│   └── README.md
+├── results/
+│   ├── metrics_blind_test_v3_final.csv
+│   ├── confusion_matrix_blind_test_v3_final.png
+│   ├── metrics_cnn_sdr_dataset.csv
+│   ├── summary_cnn_sdr_dataset.csv
+│   ├── confusion_matrix_cnn_sdr_dataset.png
+│   ├── metrics_transfer_learning_internal_test.csv
+│   ├── summary_transfer_learning_training.csv
+│   ├── confusion_matrix_transfer_learning_internal_test.png
+│   ├── metrics_transfer_learning_blind_test.csv
+│   ├── summary_transfer_learning_blind_test.csv
+│   ├── confusion_matrix_transfer_learning_blind_test.png
+│   ├── metrics_transfer_learning_sdr_dataset.csv
+│   ├── summary_transfer_learning_sdr_dataset.csv
+│   └── confusion_matrix_transfer_learning_sdr_dataset.png
+├── data/
+│   └── README.md
+└── docs/
+    └── validation_summary.md
+```
+
+---
+
+## 15. Generated Outputs
+
+The main reproducibility outputs are:
+
+| File | Description |
+|---|---|
+| `models/cnn_wifi_bluetooth_v3_domain_randomized.mat` | Trained custom CNN baseline model. |
+| `models/resnet18_transfer_learning_wifi_bluetooth.mat` | Trained ResNet-18 transfer-learning model. |
+| `results/metrics_blind_test_v3_final.csv` | Custom CNN blind-test metrics. |
+| `results/metrics_cnn_sdr_dataset.csv` | Custom CNN SDR validation metrics. |
+| `results/metrics_transfer_learning_internal_test.csv` | ResNet-18 internal test metrics. |
+| `results/metrics_transfer_learning_blind_test.csv` | ResNet-18 blind-test metrics. |
+| `results/metrics_transfer_learning_sdr_dataset.csv` | ResNet-18 SDR validation metrics. |
+| `results/confusion_matrix_blind_test_v3_final.png` | Custom CNN blind-test confusion matrix. |
+| `results/confusion_matrix_cnn_sdr_dataset.png` | Custom CNN SDR confusion matrix. |
+| `results/confusion_matrix_transfer_learning_internal_test.png` | ResNet-18 internal test confusion matrix. |
+| `results/confusion_matrix_transfer_learning_blind_test.png` | ResNet-18 blind-test confusion matrix. |
+| `results/confusion_matrix_transfer_learning_sdr_dataset.png` | ResNet-18 SDR confusion matrix. |
+
+---
+
+## 16. Notes and Limitations
+
+- The training and blind-test datasets are generated synthetically from MATLAB I/Q waveforms.
+- The SDR image dataset is used only for validation, not training.
+- SDR validation accuracy may be lower than synthetic blind-test accuracy because SDR images can include hardware and environmental effects not fully represented in the synthetic dataset.
+- The `Unknown` class is intentionally broad and can overlap visually with noise, weak Bluetooth-like activity, bursts, or other RF-like structures.
+- The project performs image-level RF classification, not semantic segmentation.
+- Raw I/Q datasets and large generated spectrogram datasets are not tracked in Git because of size.
+- If `.mat` model files are large, they should be tracked with Git LFS.
+
+---
+
+## 17. Git LFS and Large Files
+
+The generated datasets are excluded from the repository.
+
+Recommended `.gitignore` model exceptions:
+
+```gitignore
+# MATLAB model files
+*.mat
+
+# Keep pretrained models for reproducibility
+!models/cnn_wifi_bluetooth_v3_domain_randomized.mat
+!models/resnet18_transfer_learning_wifi_bluetooth.mat
+```
+
+Recommended Git LFS setup:
+
+```bash
+git lfs install
+git lfs track "models/*.mat"
+git add .gitattributes
+```
+
+---
+
+## 18. License
+
+This project is released under the BSD 2-Clause License. See the `LICENSE` file for details.
