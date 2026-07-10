@@ -16,24 +16,17 @@ data/blind_test_v2_final/
 Bases_de_Datos/
 data_nist_public/
 data_real_sdr/
+data_simulated_sdr_v1/
+data_nist_public_resampled/
+data_nist_active/
 
-# Large RF / IQ / dataset files
+# Large RF / IQ files
 *.h5
 *.hdf5
 *.bin
 *.dat
 *.iq
 
-# MATLAB model files
-*.mat
-
-# Keep final pretrained models
-!models/cnn_wifi_bluetooth_v3_domain_randomized.mat
-!models/resnet18_transfer_learning_wifi_bluetooth.mat
-
 # System files
 .DS_Store
 Thumbs.db
-data_simulated_sdr_v1/
-data_nist_public_resampled/
-data_nist_active/
