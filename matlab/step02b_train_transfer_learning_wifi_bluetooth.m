@@ -16,7 +16,9 @@ clear; clc; close all;
 %% -----------------------------
 %  Project configuration
 %% -----------------------------
-projectDir = "C:\Users\DETPC\Desktop\Proyecto";
+scriptPath = mfilename("fullpath");
+matlabDir = fileparts(scriptPath);
+projectDir = fileparts(matlabDir);
 
 dataDir = fullfile(projectDir, "data", "spectrograms_v3_domain_randomized");
 modelsDir = fullfile(projectDir, "models");
@@ -234,6 +236,17 @@ cm.ColumnSummary = "column-normalized";
 %% -----------------------------
 %  Metrics by class
 %% -----------------------------
+classOrder = categorical(classNames, classNames);
+
+C = confusionmat(YTrueTest, YPredTest, ...
+    "Order", classOrder);
+
+fig = figure;
+cm = confusionchart(C, classOrder);
+
+cm.Title = "Confusion Matrix - ResNet-18 Transfer Learning";
+cm.RowSummary = "row-normalized";
+cm.ColumnSummary = "column-normalized";
 TP = diag(C);
 FP = sum(C,1)' - TP;
 FN = sum(C,2) - TP;
