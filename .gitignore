@@ -13,11 +13,15 @@ data/spectrograms_v2_robust/
 data/spectrograms_v3_domain_randomized/
 data/blind_test_v1/
 data/blind_test_v2_final/
+data/receiver_like_validation/
 Bases_de_Datos/
 data_nist_public/
 data_real_sdr/
 data_nist_public_resampled/
 data_nist_active/
+
+# Generated training checkpoints
+results/checkpoints_transfer_learning/
 
 # Large RF / IQ files
 *.h5

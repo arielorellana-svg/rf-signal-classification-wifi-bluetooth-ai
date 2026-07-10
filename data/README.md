@@ -1,18 +1,77 @@
-# Data
+# Dataset Layout
 
-Large datasets are not included in this repository because of size.
+The project uses three synthetic datasets with a shared six-class folder structure.
 
-## Synthetic datasets
+## Training dataset
 
-The following datasets can be regenerated using the MATLAB scripts in the `matlab/` folder:
+```text
+data/spectrograms_v3_domain_randomized
+```
 
-- `data/spectrograms_v3_domain_randomized`: 18,000 synthetic spectrograms for training, validation, and internal testing.
-- `data/blind_test_v2_final`: 6,000 independent blind-test spectrograms.
+- 3,000 spectrograms per class
+- 18,000 images total
+- Random seed: 21
+- Used for training, validation, and internal testing
 
-## Real SDR validation dataset
+Generate with:
 
-The SDR validation dataset was generated from real USRP B210 I/Q captures:
+```matlab
+run("matlab/step01_generate_dataset_wifi_bluetooth.m")
+```
 
-- `data_sdr/spectrograms`: 3,600 real SDR spectrogram images used for additional validation.
+## Independent blind test
 
-This dataset is not simulated. Recreating it requires compatible SDR hardware and the Communications Toolbox Support Package for USRP Radio.
+```text
+data/blind_test_v2_final
+```
+
+- 1,000 spectrograms per class
+- 6,000 images total
+- Random seed: 2026
+- Generated independently from the training dataset
+
+Generate with:
+
+```matlab
+run("matlab/step03_generate_blind_test.m")
+```
+
+## Receiver-like validation
+
+```text
+data/receiver_like_validation/spectrograms
+```
+
+- 600 spectrograms per class
+- 3,600 images total
+- Random seed: 407
+- Generated independently from training
+- Includes acquisition-inspired receiver effects
+
+Generate with:
+
+```matlab
+run("matlab/step04_generate_receiver_like_validation.m")
+```
+
+Additional files:
+
+```text
+data/receiver_like_validation/metadata_receiver_like_validation.csv
+data/receiver_like_validation/generation_config_receiver_like.csv
+```
+
+The metadata contains controlled synthetic parameters such as SNR, receiver gain, programmed frequency displacement, oscillator mismatch, and clipping ratio. File references are stored relative to the repository root.
+
+## Class folders
+
+```text
+Bluetooth
+Noise
+Unknown
+WiFi
+WiFi_Bluetooth_Overlap
+WiFi_Bluetooth_Separated
+```
+
+Large generated datasets are excluded from normal version control. The scripts, pretrained models, metrics, and generation configuration provide the reproducible project definition.
