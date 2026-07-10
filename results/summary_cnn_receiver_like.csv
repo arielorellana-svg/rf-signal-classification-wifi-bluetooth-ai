@@ -1,0 +1,2 @@
+Model,NumClasses,NumReceiverLikeSamples,ReceiverLikeAccuracy,MiniBatchSize,ReceiverLikeDatasetPath
+custom_cnn_baseline,6,3600,0.843611111111111,64,results/data_sdr/spectrograms
