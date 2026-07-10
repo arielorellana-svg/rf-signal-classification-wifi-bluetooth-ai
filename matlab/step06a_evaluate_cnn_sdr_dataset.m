@@ -10,7 +10,9 @@ clear; clc; close all;
 %% ============================================================
 
 %% Project paths
-projectDir = "C:\Users\DETPC\Desktop\Proyecto";
+scriptPath = mfilename("fullpath");
+matlabDir = fileparts(scriptPath);
+projectDir = fileparts(matlabDir);
 
 modelPath = fullfile(projectDir, "models", ...
     "cnn_wifi_bluetooth_v3_domain_randomized.mat");
