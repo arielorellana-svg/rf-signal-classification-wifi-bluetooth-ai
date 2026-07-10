@@ -1,6 +1,6 @@
-# Data
+# Dataset Layout
 
-This project uses three synthetic datasets for training and evaluation.
+The project uses three synthetic datasets with a shared six-class folder structure.
 
 ## Training dataset
 
@@ -8,10 +8,16 @@ This project uses three synthetic datasets for training and evaluation.
 data/spectrograms_v3_domain_randomized
 ```
 
-- 6 classes.
-- 3,000 spectrograms per class.
-- 18,000 images in total.
-- Used for training, validation, and internal testing.
+- 3,000 spectrograms per class
+- 18,000 images total
+- Random seed: 21
+- Used for training, validation, and internal testing
+
+Generate with:
+
+```matlab
+run("matlab/step01_generate_dataset_wifi_bluetooth.m")
+```
 
 ## Independent blind test
 
@@ -19,35 +25,45 @@ data/spectrograms_v3_domain_randomized
 data/blind_test_v2_final
 ```
 
-- 6 classes.
-- 1,000 spectrograms per class.
-- 6,000 images in total.
-- Generated independently and not used during training.
+- 1,000 spectrograms per class
+- 6,000 images total
+- Random seed: 2026
+- Generated independently from the training dataset
 
-Some repository copies may store this dataset under `results/blindtestv2_final` or `results/blind_test_v2_final`. The evaluation scripts detect these layouts automatically.
+Generate with:
 
-## Receiver-like validation dataset
-
-The additional 3,600-image validation set is synthetic. It contains 600 samples per class and applies receiver-inspired effects such as randomized SNR, programmed frequency offsets, simulated gain variation, IQ imbalance, DC offset, channel effects, colored noise, bursts, and weak spurious components.
-
-Known SNR, gain, and offset values in its metadata are simulation parameters. They are not measurements from RF hardware.
-
-Supported locations are:
-
-```text
-results/data_sdr/spectrograms
-results/data_sdr
-data_simulated_sdr_v1/spectrograms
-data_simulated_sdr_v1
-data_sdr/spectrograms
-data_sdr
+```matlab
+run("matlab/step03_generate_blind_test.m")
 ```
 
-The first location containing all six class folders is selected automatically.
+## Receiver-like validation
 
-Some legacy filenames use `sdr` or `sdrsim`. In this repository, those names refer to the synthetic SDR-like or receiver-like validation set and do not indicate hardware capture.
+```text
+data/receiver_like_validation/spectrograms
+```
 
-## Classes
+- 600 spectrograms per class
+- 3,600 images total
+- Random seed: 407
+- Generated independently from training
+- Includes acquisition-inspired receiver effects
+
+Generate with:
+
+```matlab
+run("matlab/step04_generate_receiver_like_validation.m")
+```
+
+Additional files:
+
+```text
+data/receiver_like_validation/metadata_receiver_like_validation.csv
+data/receiver_like_validation/generation_config_receiver_like.csv
+```
+
+The metadata contains controlled synthetic parameters such as SNR, receiver gain, programmed frequency displacement, oscillator mismatch, and clipping ratio. File references are stored relative to the repository root.
+
+## Class folders
 
 ```text
 Bluetooth
@@ -58,6 +74,4 @@ WiFi_Bluetooth_Overlap
 WiFi_Bluetooth_Separated
 ```
 
-## Reproducibility
-
-The synthetic training and blind-test datasets can be regenerated with the MATLAB scripts in the `matlab/` folder. The pretrained models in `models/` allow the included evaluation results to be checked without retraining.
+Large generated datasets are excluded from normal version control. The scripts, pretrained models, metrics, and generation configuration provide the reproducible project definition.
