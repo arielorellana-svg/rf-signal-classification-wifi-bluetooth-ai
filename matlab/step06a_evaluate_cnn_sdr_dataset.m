@@ -1,171 +1,135 @@
 clear; clc; close all;
 
 %% ============================================================
-%  STEP 06A - EVALUATE CUSTOM CNN BASELINE ON SDR IMAGE DATASET
-%  Model: Custom CNN baseline
-%  Dataset: data_sdr/spectrograms
-%
-%  This script regenerates the SDR validation results for the original
-%  custom CNN baseline without using the word "simulation".
+% STEP 06A - EVALUATE CUSTOM CNN ON RECEIVER-LIKE VALIDATION DATA
+% Dataset: independent synthetic data with receiver-inspired impairments
 %% ============================================================
 
-%% Project paths
 scriptPath = mfilename("fullpath");
 matlabDir = fileparts(scriptPath);
 projectDir = fileparts(matlabDir);
 
 modelPath = fullfile(projectDir, "models", ...
     "cnn_wifi_bluetooth_v3_domain_randomized.mat");
-
-sdrDir = fullfile(projectDir, "data_sdr", "spectrograms");
-
 resultsDir = fullfile(projectDir, "results");
+
+expectedClasses = ["Bluetooth", "Noise", "Unknown", "WiFi", ...
+    "WiFi_Bluetooth_Overlap", "WiFi_Bluetooth_Separated"];
+
+validationCandidates = [ ...
+    fullfile(projectDir, "results", "data_sdr", "spectrograms"), ...
+    fullfile(projectDir, "results", "data_sdr"), ...
+    fullfile(projectDir, "data_simulated_sdr_v1", "spectrograms"), ...
+    fullfile(projectDir, "data_simulated_sdr_v1"), ...
+    fullfile(projectDir, "data_sdr", "spectrograms"), ...
+    fullfile(projectDir, "data_sdr")];
+
+validationDir = findClassFolder(validationCandidates, expectedClasses);
 
 if ~exist(modelPath, "file")
     error("Custom CNN model not found: %s", modelPath);
 end
-
-if ~exist(sdrDir, "dir")
-    error("SDR spectrogram dataset folder not found: %s", sdrDir);
+if strlength(validationDir) == 0
+    error("Receiver-like validation dataset not found. Checked:\n%s", ...
+        strjoin(validationCandidates, newline));
 end
-
 if ~exist(resultsDir, "dir")
     mkdir(resultsDir);
 end
 
-%% Load custom CNN model
-S = load(modelPath);
+fprintf("Using receiver-like validation dataset:\n%s\n", validationDir);
 
-if isfield(S, "net")
-    net = S.net;
-else
+S = load(modelPath);
+if ~isfield(S, "net")
     error("The model file does not contain variable 'net': %s", modelPath);
 end
+net = S.net;
 
 if isfield(S, "classNames")
-    classNames = S.classNames;
+    classNames = string(S.classNames(:));
 else
-    classNames = ["Bluetooth"; ...
-                  "Noise"; ...
-                  "Unknown"; ...
-                  "WiFi"; ...
-                  "WiFi_Bluetooth_Overlap"; ...
-                  "WiFi_Bluetooth_Separated"];
+    classNames = expectedClasses(:);
 end
 
-classNames = string(classNames(:));
-
-fprintf("Loaded custom CNN baseline model:\n%s\n", modelPath);
-
-%% Load SDR spectrogram dataset
-imdsSDR = imageDatastore(sdrDir, ...
+imdsValidation = imageDatastore(validationDir, ...
     "IncludeSubfolders", true, ...
     "LabelSource", "foldernames");
 
-disp("SDR dataset count by class:");
-disp(countEachLabel(imdsSDR));
+disp("Receiver-like validation count by class:");
+disp(countEachLabel(imdsValidation));
 
-img = readimage(imdsSDR, 1);
-fprintf("First SDR image size:\n");
-disp(size(img));
-
-%% Evaluate model
 miniBatchSize = 64;
-
-fprintf("\nClassifying SDR image dataset with custom CNN baseline...\n");
-
-YPredSDR = classify(net, imdsSDR, ...
+YPredValidation = classify(net, imdsValidation, ...
     "MiniBatchSize", miniBatchSize, ...
     "ExecutionEnvironment", "auto");
+YTrueValidation = imdsValidation.Labels;
+receiverLikeAccuracyCNN = mean(YPredValidation == YTrueValidation);
 
-YTrueSDR = imdsSDR.Labels;
+fprintf("\nCustom CNN receiver-like validation accuracy: %.2f %%\n", ...
+    receiverLikeAccuracyCNN * 100);
 
-sdrAccuracyCNN = mean(YPredSDR == YTrueSDR);
-
-fprintf("\nCustom CNN SDR dataset accuracy: %.2f %%\n", sdrAccuracyCNN * 100);
-
-%% Confusion matrix and metrics
 classOrder = categorical(classNames, classNames);
-
-C = confusionmat(YTrueSDR, YPredSDR, 'Order', classOrder);
+C = confusionmat(YTrueValidation, YPredValidation, 'Order', classOrder);
 
 fig = figure;
 cm = confusionchart(C, categorical(classNames, classNames));
-cm.Title = "Confusion Matrix - Custom CNN SDR Dataset";
+cm.Title = "Confusion Matrix - Custom CNN Receiver-Like Validation";
 cm.RowSummary = "row-normalized";
 cm.ColumnSummary = "column-normalized";
 
 TP = diag(C);
 FP = sum(C,1)' - TP;
 FN = sum(C,2) - TP;
-
 precision = TP ./ (TP + FP);
 recall = TP ./ (TP + FN);
 f1score = 2 * (precision .* recall) ./ (precision + recall);
-
 precision(isnan(precision)) = 0;
 recall(isnan(recall)) = 0;
 f1score(isnan(f1score)) = 0;
 
-metricsTableCNNSDR = table( ...
-    string(classNames(:)), ...
-    precision(:), ...
-    recall(:), ...
-    f1score(:), ...
-    'VariableNames', {'Class','Precision','Recall','F1_score'});
+metricsTableReceiverLikeCNN = table(classNames, precision(:), recall(:), ...
+    f1score(:), 'VariableNames', {'Class','Precision','Recall','F1_score'});
 
-disp("Custom CNN metrics on SDR dataset:");
-disp(metricsTableCNNSDR);
+summaryReceiverLikeCNN = table( ...
+    string("custom_cnn_baseline"), numel(classNames), ...
+    numel(imdsValidation.Files), receiverLikeAccuracyCNN, miniBatchSize, ...
+    string(relativePath(projectDir, validationDir)), ...
+    'VariableNames', {'Model','NumClasses','NumReceiverLikeSamples', ...
+    'ReceiverLikeAccuracy','MiniBatchSize','ReceiverLikeDatasetPath'});
 
-summaryCNNSDR = table( ...
-    string("custom_cnn_baseline"), ...
-    numel(classNames), ...
-    numel(imdsSDR.Files), ...
-    sdrAccuracyCNN, ...
-    miniBatchSize, ...
-    string(sdrDir), ...
-    'VariableNames', { ...
-        'Model', ...
-        'NumClasses', ...
-        'NumSDRSamples', ...
-        'SDRAccuracy', ...
-        'MiniBatchSize', ...
-        'SDRDatasetPath'});
+disp(metricsTableReceiverLikeCNN);
+disp(summaryReceiverLikeCNN);
 
-disp("Custom CNN SDR evaluation summary:");
-disp(summaryCNNSDR);
+save(fullfile(resultsDir, "receiver_like_results_cnn_baseline.mat"), ...
+    "receiverLikeAccuracyCNN", "metricsTableReceiverLikeCNN", ...
+    "summaryReceiverLikeCNN", "C", "YTrueValidation", ...
+    "YPredValidation", "classNames", "validationDir", "-v7.3");
+writetable(metricsTableReceiverLikeCNN, ...
+    fullfile(resultsDir, "metrics_cnn_receiver_like.csv"));
+writetable(summaryReceiverLikeCNN, ...
+    fullfile(resultsDir, "summary_cnn_receiver_like.csv"));
+exportgraphics(fig, ...
+    fullfile(resultsDir, "confusion_matrix_cnn_receiver_like.png"), ...
+    "Resolution", 300);
 
-%% Save results with neutral names
-resultsPath = fullfile(resultsDir, ...
-    "sdr_results_cnn_baseline.mat");
+fprintf("\nReceiver-like custom-CNN evaluation completed successfully.\n");
 
-metricsCsvPath = fullfile(resultsDir, ...
-    "metrics_cnn_sdr_dataset.csv");
+function folder = findClassFolder(candidates, expectedClasses)
+    folder = "";
+    for k = 1:numel(candidates)
+        candidate = string(candidates(k));
+        if exist(candidate, "dir") ~= 7
+            continue;
+        end
+        hasClasses = all(arrayfun(@(c) ...
+            exist(fullfile(candidate, c), "dir") == 7, expectedClasses));
+        if hasClasses
+            folder = candidate;
+            return;
+        end
+    end
+end
 
-summaryCsvPath = fullfile(resultsDir, ...
-    "summary_cnn_sdr_dataset.csv");
-
-confusionFigPath = fullfile(resultsDir, ...
-    "confusion_matrix_cnn_sdr_dataset.png");
-
-save(resultsPath, ...
-    "sdrAccuracyCNN", ...
-    "metricsTableCNNSDR", ...
-    "summaryCNNSDR", ...
-    "C", ...
-    "YTrueSDR", ...
-    "YPredSDR", ...
-    "classNames", ...
-    "sdrDir", ...
-    "-v7.3");
-
-writetable(metricsTableCNNSDR, metricsCsvPath);
-writetable(summaryCNNSDR, summaryCsvPath);
-exportgraphics(fig, confusionFigPath, "Resolution", 300);
-
-fprintf("\nSaved custom CNN SDR results:\n%s\n", resultsPath);
-fprintf("\nSaved custom CNN SDR metrics:\n%s\n", metricsCsvPath);
-fprintf("\nSaved custom CNN SDR summary:\n%s\n", summaryCsvPath);
-fprintf("\nSaved custom CNN SDR confusion matrix:\n%s\n", confusionFigPath);
-
-fprintf("\nCustom CNN SDR evaluation completed successfully.\n");
+function p = relativePath(projectDir, absolutePath)
+    p = erase(string(absolutePath), string(projectDir) + filesep);
+end
