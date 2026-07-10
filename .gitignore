@@ -27,7 +27,7 @@ data_real_sdr/
 # MATLAB model files
 *.mat
 
-# Keep the final pretrained model for reproducibility
+# Keep final pretrained models
 !models/cnn_wifi_bluetooth_v3_domain_randomized.mat
 !models/resnet18_transfer_learning_wifi_bluetooth.mat
 
