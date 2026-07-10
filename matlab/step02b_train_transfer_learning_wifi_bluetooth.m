@@ -234,6 +234,17 @@ cm.ColumnSummary = "column-normalized";
 %% -----------------------------
 %  Metrics by class
 %% -----------------------------
+classOrder = categorical(classNames, classNames);
+
+C = confusionmat(YTrueTest, YPredTest, ...
+    "Order", classOrder);
+
+fig = figure;
+cm = confusionchart(C, classOrder);
+
+cm.Title = "Confusion Matrix - ResNet-18 Transfer Learning";
+cm.RowSummary = "row-normalized";
+cm.ColumnSummary = "column-normalized";
 TP = diag(C);
 FP = sum(C,1)' - TP;
 FN = sum(C,2) - TP;
