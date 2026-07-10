@@ -64,7 +64,7 @@ The receiver-like generator applies a separate impairment chain containing rando
 
 WiFi and Bluetooth waveforms are resampled to the common 40 MS/s observation rate, translated explicitly in complex baseband, normalized independently, combined with randomized relative power, and passed through the selected impairment chain.
 
-This explicit implementation provides direct control over spectral overlap, spectral separation, and relative signal strength.
+The implementation does not require `comm.MultibandCombiner`; explicit complex frequency translation and baseband addition provide direct control over spectral overlap, spectral separation, and relative signal strength.
 
 ## Models
 
