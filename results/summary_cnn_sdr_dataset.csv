@@ -1,0 +1,2 @@
+Model,NumClasses,NumSDRSamples,SDRAccuracy,MiniBatchSize,SDRDatasetPath
+custom_cnn_baseline,6,3600,0.843611111111111,64,C:\Users\DETPC\Desktop\Proyecto\data_sdr\spectrograms
