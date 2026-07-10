@@ -1,0 +1,2 @@
+Model,NumClasses,NumBlindTestSamples,FinalBlindTestAccuracy,MiniBatchSize
+resnet18_transfer_learning,6,6000,0.935,64

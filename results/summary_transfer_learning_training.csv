@@ -1,0 +1,2 @@
+BaseNetwork,NumClasses,MaxEpochs,MiniBatchSize,InitialLearnRate,L2Regularization,ValidationPatience,ValidationAccuracy,InternalTestAccuracy,TrainingTimeSeconds
+resnet18,6,12,64,0.0001,0.0001,6,0.95962962962963,0.959259259259259,1271.3038586
