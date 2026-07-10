@@ -55,7 +55,7 @@ gain = 35;                         % Start with 30-40 dB
 Ntarget = 81920;                   % 2.048 ms at 40 MS/s
 imageSize = [224 224];
 
-numCaptures = 300;                 % captures for this label
+numCaptures = 600;                 % captures for this label
 saveRawIQ = true;                  % save raw I/Q .mat files
 pauseBetweenCaptures = 0.02;
 
