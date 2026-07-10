@@ -29,6 +29,7 @@ data_real_sdr/
 
 # Keep the final pretrained model for reproducibility
 !models/cnn_wifi_bluetooth_v3_domain_randomized.mat
+!models/resnet18_transfer_learning_wifi_bluetooth.mat
 
 # System files
 .DS_Store
