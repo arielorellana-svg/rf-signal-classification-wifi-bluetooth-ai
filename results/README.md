@@ -1,0 +1,43 @@
+# Results
+
+This directory contains evaluation metrics, summary tables, confusion matrices, and saved MATLAB result structures.
+
+## Standard artifact names
+
+### Custom CNN: independent blind test
+
+```text
+metrics_cnn_blind_test.csv
+summary_cnn_blind_test.csv
+confusion_matrix_cnn_blind_test.png
+blind_test_results_cnn_baseline.mat
+```
+
+### ResNet-18: independent blind test
+
+```text
+metrics_transfer_learning_blind_test.csv
+summary_transfer_learning_blind_test.csv
+confusion_matrix_transfer_learning_blind_test.png
+blind_test_results_transfer_learning.mat
+```
+
+### Custom CNN: receiver-like validation
+
+```text
+metrics_cnn_receiver_like.csv
+summary_cnn_receiver_like.csv
+confusion_matrix_cnn_receiver_like.png
+receiver_like_results_cnn_baseline.mat
+```
+
+### ResNet-18: receiver-like validation
+
+```text
+metrics_transfer_learning_receiver_like.csv
+summary_transfer_learning_receiver_like.csv
+confusion_matrix_transfer_learning_receiver_like.png
+receiver_like_results_transfer_learning.mat
+```
+
+Result summaries use repository-relative dataset paths so that they remain portable across operating systems and local folders.
