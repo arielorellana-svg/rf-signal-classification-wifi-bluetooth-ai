@@ -763,24 +763,7 @@ The main reproducibility outputs are:
 * Real SDR validation accuracy may be lower than synthetic blind-test accuracy because SDR captures can include hardware and environmental effects not fully represented in the synthetic dataset.
 * The `Unknown` class is intentionally broad and can overlap visually with noise, weak Bluetooth-like activity, bursts, or other RF-like structures.
 * The project performs image-level RF classification, not semantic segmentation.
-* Raw I/Q datasets and large generated spectrogram datasets are not tracked in Git because of size.
 * The included `.mat` model files allow reviewers to verify the reported results without retraining.
-
----
-
-## 18. Large Files
-
-Generated datasets and raw I/Q files are excluded from Git because of size.
-
-The trained `.mat` model files are included in the `models/` folder so reviewers can verify the reported results without retraining.
-
-If future model files exceed GitHub size limits, Git LFS should be used:
-
-```bash
-git lfs install
-git lfs track "models/*.mat"
-git add .gitattributes
-```
 
 ---
 
